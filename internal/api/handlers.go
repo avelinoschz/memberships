@@ -31,11 +31,9 @@ func (s *Server) HandleAlive() http.HandlerFunc {
 
 			w.WriteHeader(http.StatusInternalServerError)
 
-			jsonapi.MarshalErrors(w, []*jsonapi.ErrorObject{{
-				Title:  "JSON Parse error",
-				Detail: "There was an errors parsing the JSON response",
-				Status: "500",
-			}})
+			jsonapi.MarshalErrors(w, []*jsonapi.ErrorObject{
+				&jsonParseErr,
+			})
 			return
 		}
 
