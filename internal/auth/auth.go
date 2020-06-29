@@ -6,8 +6,8 @@ import (
 	"io/ioutil"
 	"time"
 
-	"github.com/apex/log"
 	jwt "github.com/dgrijalva/jwt-go"
+	log "github.com/sirupsen/logrus"
 )
 
 var (
@@ -44,9 +44,9 @@ func init() {
 
 // GenerateJWT creates a JWT using the user info received.
 // Returns the token already in base64 encoding
-func GenerateJWT(user string) string {
+func GenerateJWT(memberID string) string {
 	claims := Claim{
-		UserID: user,
+		MemberID: memberID,
 		StandardClaims: jwt.StandardClaims{
 			ExpiresAt: time.Now().Add(time.Hour * 1).Unix(), // expires one hour from now in unix time
 			Issuer:    "issuer",

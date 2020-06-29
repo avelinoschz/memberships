@@ -20,4 +20,10 @@ var (
 		Detail: "Data is not a jsonapi representation",
 		Status: "400",
 	}
+
+	invalidUser = jsonapi.ErrorObject{
+		Title:  "Invalid User",
+		Detail: "Member name or/and password were wrong",
+		Status: "403",
+	}
 )

@@ -1,15 +1,14 @@
 package api
 
 import (
-	"encoding/json"
-	"fmt"
-	"log"
 	"math"
 	"net/http"
 	"time"
 
 	"github.com/avelinoschz/yofio/internal/auth"
 	"github.com/avelinoschz/yofio/internal/member"
+	"github.com/google/jsonapi"
+	log "github.com/sirupsen/logrus"
 )
 
 // HandleAlive is a health check endpoint.
@@ -32,33 +31,27 @@ func (s *Server) handleAlive() http.HandlerFunc {
 func (s *Server) handleAuthLogin() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var member member.Member
-		err := json.NewDecoder(r.Body).Decode(&member)
-		if err != nil {
-			log.Printf("Error reading user: %s\n", err)
+		if errs := decode(r, &member); errs != nil {
+			respondWithErrors(w, errs, http.StatusBadRequest)
+			return
 		}
 
 		if member.Name == "avelino" && member.Password == "password" {
-			member.Password = "" // clean password to re-use model
-
 			token := auth.GenerateJWT(string(member.ID))
 			respToken := auth.ResponseToken{
 				Token: token,
 			}
 
-			jsonResp, err := json.Marshal(respToken)
-			if err != nil {
-				log.Println("Error marshaling json response token")
-				return
-			}
-
-			w.WriteHeader(http.StatusOK)
-			w.Header().Set("Content-Type", "application/json")
-			w.Write(jsonResp)
+			respond(w, &respToken, http.StatusOK)
 			return
 		}
 
-		w.WriteHeader(http.StatusForbidden)
-		fmt.Fprintln(w, "Invalid user or password")
+		log.Error("Invalid user or password")
+		errs := []*jsonapi.ErrorObject{
+			&invalidUser,
+		}
+
+		respondWithErrors(w, errs, http.StatusForbidden)
 		return
 	}
 }

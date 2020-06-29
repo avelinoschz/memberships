@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/apex/log"
 	"github.com/google/jsonapi"
+	log "github.com/sirupsen/logrus"
 	"gopkg.in/validator.v2"
 )
 

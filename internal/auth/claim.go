@@ -4,6 +4,6 @@ import jwt "github.com/dgrijalva/jwt-go"
 
 // Claim contains the JWT payload information
 type Claim struct {
-	UserID string `json:"user_id"`
+	MemberID string `json:"member_id"`
 	jwt.StandardClaims
 }
