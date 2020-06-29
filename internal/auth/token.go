@@ -1,3 +1,15 @@
+package auth
+
+import (
+	"fmt"
+	"log"
+	"net/http"
+
+	jwt "github.com/dgrijalva/jwt-go"
+	"github.com/dgrijalva/jwt-go/request"
+)
+
+// ResponseToken ...
 type ResponseToken struct {
 	Token string `json:"token"`
 }
@@ -7,7 +19,7 @@ func ValidateToken(w http.ResponseWriter, r *http.Request) {
 	token, err := request.ParseFromRequestWithClaims(
 		r,                       // takes the request token with all the claims included
 		request.OAuth2Extractor, // type of extraction. OAuth2Extractor looks in 'Authorization' header
-		&models.Claim{},         // struct or model of the claims to be extracted
+		&Claim{},                // struct or model of the claims to be extracted
 		func(token *jwt.Token) (interface{}, error) {
 			return publicKey, nil
 		},
