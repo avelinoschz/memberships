@@ -1,0 +1,62 @@
+openapi: 3.0.0
+info:
+  title: Memberships API
+  description: Micro-service to manage members and payments. It follows [jsonapi](https://jsonapi.org/) standard.
+  version: 1.0.0
+servers:
+  - url: http://localhost.com/memberships/api/v1/
+    description: Sandbox server
+  - url: http://staging-api.com/memberships/api/v1/
+    description: Internal staging server for testing
+paths:
+  /alive:
+    get:
+      summary: Returns the current time and server's uptime.
+      description: Endpoint used for health checking.
+      responses:
+        '200':
+          description: Generic jsonapi response holding current time and uptime.
+          content:
+            application/json:
+              schema: 
+                type: object
+                items: 
+                  type: object
+  /members:
+    post:
+      summary: Returns the current time and server's uptime.
+      description: Endpoint used for health checking.
+      responses:
+        '200':
+          description: Generic jsonapi response holding current time and uptime.
+          content:
+            application/json:
+              schema: 
+                type: object
+                items: 
+                  type: object
+  /payments:
+    get:
+      summary: Returns the current time and server's uptime.
+      description: Endpoint used for health checking.
+      responses:
+        '200':
+          description: Generic jsonapi response holding current time and uptime.
+          content:
+            application/json:
+              schema: 
+                type: object
+                items: 
+                  type: object
+    post:
+      summary: Returns the current time and server's uptime.
+      description: Endpoint used for health checking.
+      responses:
+        '200':
+          description: Generic jsonapi response holding current time and uptime.
+          content:
+            application/json:
+              schema: 
+                type: object
+                items: 
+                  type: object
