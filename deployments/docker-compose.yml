@@ -1,0 +1,18 @@
+version: '3.7'
+services:
+  db:
+    container_name: "db"
+    image: mysql:latest
+    volumes:
+      - db-data:/var/lib/mysql
+    restart: always
+    environment:
+      MYSQL_DATABASE: memberships
+      MYSQL_ROOT_PASSWORD: rootpw
+      MYSQL_USER: yofio
+      MYSQL_PASSWORD: yofiopw
+    ports:
+      - "3306:3306"
+volumes:
+  db-data:
+
