@@ -9,8 +9,8 @@ services:
     environment:
       MYSQL_DATABASE: memberships
       MYSQL_ROOT_PASSWORD: rootpw
-      MYSQL_USER: yofio
-      MYSQL_PASSWORD: yofiopw
+      MYSQL_USER: user
+      MYSQL_PASSWORD: userpw
     ports:
       - "3306:3306"
 volumes:
