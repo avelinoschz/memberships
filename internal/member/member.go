@@ -1,8 +1,9 @@
-package api
+package member
 
 import "time"
 
-// Member ...
+// Member holds user's information.
+// Extensible to hold membership related info, such as category and contract term.
 type Member struct {
 	ID        int       `jsonapi:"primary,members"`
 	Name      string    `json:"name" jsonapi:"attr,name" validate:"nonzero,max=40,regexp=^[a-zA-Z]+( [a-zA-Z]+)*$"`

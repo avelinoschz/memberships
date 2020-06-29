@@ -3,17 +3,18 @@ package api
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"math"
 	"net/http"
 	"time"
 
-	"github.com/go-validator/validator"
-	"github.com/google/jsonapi"
-	log "github.com/sirupsen/logrus"
+	"github.com/avelinoschz/yofio/internal/auth"
+	"github.com/avelinoschz/yofio/internal/member"
 )
 
-// HandleAlive ...
-func (s *Server) HandleAlive() http.HandlerFunc {
+// HandleAlive is a health check endpoint.
+// Returns current time of the request and the server's uptime.
+func (s *Server) handleAlive() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		payload := struct {
 			CurrentTime time.Time `jsonapi:"attr,currentTime"`
@@ -23,46 +24,74 @@ func (s *Server) HandleAlive() http.HandlerFunc {
 			Uptime:      math.Round(time.Since(s.startupAt).Seconds()*100) / 100,
 		}
 
-		s.respond(w, &payload, http.StatusOK)
+		respond(w, &payload, http.StatusOK)
 	}
 }
 
-// HandleMemberCreate ...
-func (s *Server) HandleMemberCreate() http.HandlerFunc {
+// Login returns a JWT with the same user info received and standard claims
+func (s *Server) handleAuthLogin(w http.ResponseWriter, r *http.Request) {
+	var member member.Member
+	err := json.NewDecoder(r.Body).Decode(&member)
+	if err != nil {
+		log.Printf("Error reading user: %s\n", err)
+	}
+
+	if member.Name == "avelino" && member.Password == "password" {
+		member.Password = "" // clean password to re-use model
+
+		token := auth.GenerateJWT(string(member.ID))
+		respToken := auth.ResponseToken{
+			Token: token,
+		}
+
+		jsonResp, err := json.Marshal(respToken)
+		if err != nil {
+			log.Println("Error marshaling json response token")
+			return
+		}
+
+		w.WriteHeader(http.StatusOK)
+		w.Header().Set("Content-Type", "application/json")
+		w.Write(jsonResp)
+		return
+	}
+
+	w.WriteHeader(http.StatusForbidden)
+	fmt.Fprintln(w, "Invalid user or password")
+	return
+}
+
+// HandleMembersCreate registers a new member in the API.
+func (s *Server) handleMembersCreate() http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		var member Member
+		var member member.Member
 
-		// decode helper
-
-		// TODO fix to accept jsonapi request format
-		if err := json.NewDecoder(r.Body).Decode(&member); err != nil {
-			log.Error(err.Error())
-
-			errObjects := []*jsonapi.ErrorObject{
-				&jsonParseErr,
-			}
-
-			s.respondWithErrors(w, errObjects, http.StatusBadRequest)
+		if errs := decode(r, &member); errs != nil {
+			respondWithErrors(w, errs, http.StatusBadRequest)
 			return
 		}
 
-		if err := validator.Validate(member); err != nil {
-			log.Error(err.Error())
-
-			var errObjects []*jsonapi.ErrorObject
-
-			vErrs := err.(validator.ErrorMap)
-			for f, e := range vErrs {
-				errObjects = append(errObjects, &jsonapi.ErrorObject{
-					Title:  fmt.Sprintf("Invalid %s", f),
-					Detail: fmt.Sprintf("%v", e),
-				})
-			}
-
-			s.respondWithErrors(w, errObjects, http.StatusUnprocessableEntity)
+		if errs := validate(&member); errs != nil {
+			respondWithErrors(w, errs, http.StatusBadRequest)
 			return
 		}
 
-		s.respond(w, &member, http.StatusOK)
+		s.db.NewRecord(member)
+
+		respond(w, &member, http.StatusOK)
+	}
+}
+
+// HandlePaymentsGet ...
+func (s *Server) handlePaymentsGet() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// TODO
+	}
+}
+
+// HandlePaymentsCreate ...
+func (s *Server) handlePaymentsCreate() http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		// TODO
 	}
 }
