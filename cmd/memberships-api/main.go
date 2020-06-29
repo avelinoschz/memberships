@@ -5,10 +5,17 @@ import (
 	"os"
 
 	"github.com/avelinoschz/yofio/internal/api"
-	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	log "github.com/sirupsen/logrus"
+	"github.com/vrischmann/envconfig"
 )
+
+var conf struct {
+	API struct {
+		Host string
+		Port string
+	}
+}
 
 func init() {
 	log.SetFormatter(&log.JSONFormatter{})
@@ -24,16 +31,14 @@ func main() {
 
 func run() error {
 
-	db, err := gorm.Open("mysql", "user:password@/dbname?charset=utf8&parseTime=True&loc=Local")
-	defer db.Close()
-	if err != nil {
+	if err := envconfig.Init(&conf); err != nil {
 		return err
 	}
 
-	srv := api.NewServer(db)
+	srv := api.NewServer()
 
 	log.Info("Server listening on port :8000")
-	err = http.ListenAndServe(":8000", srv)
+	err := http.ListenAndServe(":8000", srv)
 	if err != nil {
 		return err
 	}
