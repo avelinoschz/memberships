@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"os"
 
-	"github.com/avelinoschz/yofio/internal/api"
+	"github.com/avelinoschz/memberships/internal/api"
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/mysql"
 	log "github.com/sirupsen/logrus"

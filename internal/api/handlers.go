@@ -5,8 +5,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/avelinoschz/yofio/internal/auth"
-	"github.com/avelinoschz/yofio/internal/member"
+	"github.com/avelinoschz/memberships/internal/auth"
+	"github.com/avelinoschz/memberships/internal/member"
 	"github.com/google/jsonapi"
 	log "github.com/sirupsen/logrus"
 )
